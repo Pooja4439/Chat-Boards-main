@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Page Title</title>
+</head>
+
+<body>
+  <div id="chat">
+    <div id="messages"></div>
+    <input type="text" id="inputMessage" placeholder="Type your message..." />
+    <button id="sendMessage">Send</button>
+  </div>
+</body>
+<script>
+  const board_name = window.location.pathname.split("/")[2];
+  const sendMessageButton = document.getElementById('sendMessage');
+  console.log(board_name);
+  function connect() {
+    chatSocket = new WebSocket(
+      "ws://" + window.location.host + `/ws/board/${board_name}/connect`
+    );
+
+    chatSocket.onopen = function (e) {
+      console.log("Successfully")
+    }
+
+    chatSocket.onmessage = function (e) {
+      const data = JSON.parse(e.data);
+      console.log(data);
+
+    }
+
+    chatSocket.onerror = function (err) {
+      console.log("WebSocket encountered an error: " + err.message);
+    };
+
+    sendMessageButton.addEventListener('click', () => {
+      const message = inputMessage.value;
+      chatSocket.send(message);
+      inputMessage.value = '';
+  });
+  }
+  connect();
+</script>
+
+</html>
